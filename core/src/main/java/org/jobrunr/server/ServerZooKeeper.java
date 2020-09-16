@@ -62,7 +62,9 @@ public class ServerZooKeeper implements Runnable {
     }
 
     private void announceBackgroundJobServer() {
+        // 声明一个后台服务实例，也就是将BackgroundJobServerStatus插入到表中
         storageProvider.announceBackgroundJobServer(backgroundJobServerStatus);
+        // 重新选举主节点
         jobZooKeeper().setIsMaster(determineIfBackgroundJobServerIsMaster());
         isAnnounced = true;
     }
@@ -91,7 +93,11 @@ public class ServerZooKeeper implements Runnable {
         }
     }
 
+    /**
+     * 选举主节点
+     */
     private boolean determineIfBackgroundJobServerIsMaster() {
+        // 选举策略，选取FirstHeartbeat 最近的节点，和最新=
         final BackgroundJobServerStatus oldestServer = storageProvider
                 .getBackgroundJobServers()
                 .stream()
